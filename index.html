@@ -7,7 +7,24 @@
 </head>
 <body>
 
-  <!-- Canvas container holds the video BELOW the grain -->
+  <!-- Grain overlay -->
+  <div id="grainOverlay"></div>
+
+  <!-- Fixed UI container -->
+  <div class="ui-container">
+    <h1>Julian’s Video Vulture</h1>
+    <h2>Upload a video, adjust frame rate to taste</h2>
+
+    <input type="file" id="videoUpload" accept="video/*">
+
+    <div id="fpsControl">
+      <label for="fpsSlider">Frame Rate:</label>
+      <input type="range" id="fpsSlider" min="1" max="30" value="15">
+      <span id="fpsValue">15</span> FPS
+    </div>
+  </div>
+
+  <!-- Video container -->
   <div class="canvas-container" id="videoContainer" style="display:none;">
     <canvas id="videoCanvas"></canvas>
     <video id="video" muted loop></video>
@@ -15,21 +32,6 @@
     <div class="controls">
       <input type="range" id="seekBar" value="0" step="0.01">
     </div>
-  </div>
-
-  <!-- Grain appears ABOVE video, but still below the UI -->
-  <div id="grain-overlay"></div>
-
-  <!-- Text & UI on top of grain -->
-  <h1>Julian’s Video Vulture</h1>
-  <h2>Upload a video, control frame rate</h2>
-
-  <input type="file" id="videoUpload" accept="video/*">
-
-  <div id="fpsControl">
-    <label for="fpsSlider">Frame Rate:</label>
-    <input type="range" id="fpsSlider" min="1" max="30" value="15">
-    <span id="fpsValue">15</span> FPS
   </div>
 
   <script>
