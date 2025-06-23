@@ -1,18 +1,135 @@
 body {
   font-family: sans-serif;
-  text-align: center;
-  background: #111;
-  color: white;
+  background: #3ca048;
+  background-image: 
+    radial-gradient(rgba(0, 0, 0, 0.1) 1px, transparent 0),
+    radial-gradient(rgba(0, 0, 0, 0.1) 1px, transparent 0);
+  background-size: 2px 2px;
+  background-position: 0 0, 1px 1px;
+  color: #ffe94d;
   margin: 0;
-  padding: 20px;
+  padding: 40px 20px;
+  text-align: center;
 }
 
-#controls {
-  margin: 20px 0;
+h1, h2, label, span, p, strong, em, input, button {
+  color: #ffe94d !important;
+}
+
+.canvas-container {
+  position: relative;
+  display: inline-block;
+  background: black;
+  max-width: 90%;
 }
 
 canvas {
-  max-width: 100%;
+  width: 100%;
   height: auto;
-  background: black;
+  display: block;
+}
+
+.controls {
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.canvas-container:hover .controls {
+  opacity: 1;
+}
+
+.play-pause {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 40px;
+  color: #c92618;
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+
+.canvas-container:hover .play-pause {
+  opacity: 0.9;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+input[type="range"] {
+  width: 60%;
+  appearance: none;
+  height: 8px;
+  background: #ffe94d;
+  border-radius: 4px;
+  outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #c92618;
+  border: 2px solid #ffe94d;
+  cursor: pointer;
+  margin-top: -5px;
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #c92618;
+  border: 2px solid #ffe94d;
+  cursor: pointer;
+}
+
+#fpsControl {
+  margin-top: 20px;
+}
+
+video {
+  display: none;
+}
+
+/* Grain overlay: sits above video but under UI/text */
+#grain-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('grain.png') repeat;
+  opacity: 0.15;
+  pointer-events: none;
+  z-index: 1;
+  animation: grainDrift 2s infinite linear;
+}
+
+@keyframes grainDrift {
+  0% { background-position: 0 0; }
+  25% { background-position: 1px 1px; }
+  50% { background-position: 2px 2px; }
+  75% { background-position: 1px 1px; }
+  100% { background-position: 0 0; }
+}
+
+/* Ensure video stays behind the grain */
+.canvas-container {
+  position: relative;
+  z-index: 0; /* behind grain */
+}
+
+/* Ensure UI (text, sliders) is above the grain */
+h1, h2, label, span, input, .controls, .play-pause {
+  position: relative;
+  z-index: 2;
 }
