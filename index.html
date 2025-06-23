@@ -3,77 +3,24 @@
 <head>
   <meta charset="UTF-8" />
   <title>Julian's Video Vulture</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      background: #111;
-      color: white;
-      margin: 0;
-      padding: 40px 20px;
-      text-align: center;
-    }
-
-    .canvas-container {
-      position: relative;
-      display: inline-block;
-      background: black;
-      max-width: 90%;
-    }
-
-    canvas {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
-
-    .controls {
-      position: absolute;
-      bottom: 10px;
-      left: 0;
-      right: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-
-    .canvas-container:hover .controls {
-      opacity: 1;
-    }
-
-    .play-pause {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 40px;
-      color: white;
-      opacity: 0;
-      transition: opacity 0.2s;
-      pointer-events: none;
-    }
-
-    .canvas-container:hover .play-pause {
-      opacity: 0.8;
-      pointer-events: auto;
-      cursor: pointer;
-    }
-
-    input[type="range"] {
-      width: 60%;
-    }
-
-    #fpsControl {
-      margin-top: 20px;
-    }
-
-    video {
-      display: none;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+  <!-- Canvas container holds the video BELOW the grain -->
+  <div class="canvas-container" id="videoContainer" style="display:none;">
+    <canvas id="videoCanvas"></canvas>
+    <video id="video" muted loop></video>
+    <div class="play-pause" id="playPause">►</div>
+    <div class="controls">
+      <input type="range" id="seekBar" value="0" step="0.01">
+    </div>
+  </div>
+
+  <!-- Grain appears ABOVE video, but still below the UI -->
+  <div id="grain-overlay"></div>
+
+  <!-- Text & UI on top of grain -->
   <h1>Julian’s Video Vulture</h1>
   <h2>Upload a video, control frame rate</h2>
 
@@ -83,15 +30,6 @@
     <label for="fpsSlider">Frame Rate:</label>
     <input type="range" id="fpsSlider" min="1" max="30" value="15">
     <span id="fpsValue">15</span> FPS
-  </div>
-
-  <div class="canvas-container" id="videoContainer" style="display:none;">
-    <canvas id="videoCanvas"></canvas>
-    <video id="video" muted loop></video>
-    <div class="play-pause" id="playPause">►</div>
-    <div class="controls">
-      <input type="range" id="seekBar" value="0" step="0.01">
-    </div>
   </div>
 
   <script>
