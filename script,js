@@ -1,21 +1,19 @@
 const upload = document.getElementById('videoUpload');
 const canvas = document.getElementById('videoCanvas');
 const ctx = canvas.getContext('2d');
-const slider = document.getElementById('fpsSlider');
-const fpsDisplay = document.getElementById('fpsValue');
+const video = document.getElementById('video');
+const container = document.getElementById('videoContainer');
+const playPauseBtn = document.getElementById('playPause');
+const seekBar = document.getElementById('seekBar');
+const fpsSlider = document.getElementById('fpsSlider');
+const fpsValue = document.getElementById('fpsValue');
 
-let video = document.createElement('video');
-video.muted = true;
-video.loop = true;
-video.playsInline = true;
-video.crossOrigin = "anonymous";
+let fps = parseInt(fpsSlider.value);
+let animationId;
 
-let currentFPS = parseInt(slider.value, 10);
-let animationFrameId;
-
-slider.addEventListener('input', () => {
-  currentFPS = parseInt(slider.value, 10);
-  fpsDisplay.textContent = `${currentFPS} FPS`;
+fpsSlider.addEventListener('input', () => {
+  fps = parseInt(fpsSlider.value);
+  fpsValue.textContent = fps;
 });
 
 upload.addEventListener('change', (e) => {
@@ -24,30 +22,50 @@ upload.addEventListener('change', (e) => {
 
   const url = URL.createObjectURL(file);
   video.src = url;
-  video.load();
 
-  video.addEventListener('loadeddata', () => {
+  video.onloadeddata = () => {
+    container.style.display = 'inline-block';
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
     video.play();
-    startDrawing();
-  }, { once: true });
+    drawToCanvas();
+  };
 });
 
-function startDrawing() {
+function drawToCanvas() {
+  cancelAnimationFrame(animationId);
   let lastTime = 0;
-  let interval = 1000 / currentFPS;
 
-  function drawFrame(time) {
-    interval = 1000 / currentFPS; // update with slider
+  function draw(time) {
+    const interval = 1000 / fps;
     if (time - lastTime >= interval) {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
       lastTime = time;
     }
-    animationFrameId = requestAnimationFrame(drawFrame);
+    animationId = requestAnimationFrame(draw);
   }
 
-  cancelAnimationFrame(animationFrameId);
-  drawFrame(0);
+  animationId = requestAnimationFrame(draw);
 }
+
+playPauseBtn.addEventListener('click', () => {
+  if (video.paused) {
+    video.play();
+    playPauseBtn.textContent = '❚❚';
+  } else {
+    video.pause();
+    playPauseBtn.textContent = '►';
+  }
+});
+
+video.addEventListener('timeupdate', () => {
+  seekBar.max = video.duration;
+  seekBar.value = video.currentTime;
+});
+
+seekBar.addEventListener('input', () => {
+  video.currentTime = seekBar.value;
+});
+
+video.addEventListener('play', () => playPauseBtn.textContent = '❚❚');
+video.addEventListener('pause', () => playPauseBtn.textContent = '►');
