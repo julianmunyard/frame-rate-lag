@@ -1,32 +1,67 @@
+@font-face {
+  font-family: 'Cheap Motel';
+  src: url('./fonts/cheap-motel.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+h1, h2 {
+  font-family: 'Cheap Motel', sans-serif;
+}
+
 body {
   font-family: sans-serif;
   background: #3ca048;
   background-image: 
-    radial-gradient(rgba(0, 0, 0, 0.1) 1px, transparent 0),
-    radial-gradient(rgba(0, 0, 0, 0.1) 1px, transparent 0);
-  background-size: 2px 2px;
-  background-position: 0 0, 1px 1px;
+    radial-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 0),
+    radial-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 0);
+  background-size: 3px 3px;
+  background-position: 0 0, 1.5px 1.5px;
   color: #ffe94d;
   margin: 0;
   padding: 40px 20px;
   text-align: center;
+  overflow-x: hidden;
 }
 
-h1, h2, label, span, p, strong, em, input, button {
-  color: #ffe94d !important;
+/* Fixed top section */
+.ui-container {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #3ca048;
+  background-image: 
+    radial-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 0),
+    radial-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 0);
+  background-size: 3px 3px;
+  background-position: 0 0, 1.5px 1.5px;
+  padding-top: 20px;
+  padding-bottom: 30px;
+  width: 100%;
+  z-index: 1000;
 }
 
+h1, h2, label, span, input[type="range"] {
+  color: #ffe94d;
+}
+
+/* Video container starts after UI */
 .canvas-container {
   position: relative;
   display: inline-block;
   background: black;
   max-width: 90%;
+  margin-top: 250px;
+  z-index: 2000;
 }
 
 canvas {
   width: 100%;
   height: auto;
   display: block;
+  position: relative;
+  z-index: 2000;
 }
 
 .controls {
@@ -55,6 +90,7 @@ canvas {
   opacity: 0;
   transition: opacity 0.2s;
   pointer-events: none;
+  z-index: 1000;
 }
 
 .canvas-container:hover .play-pause {
@@ -93,43 +129,32 @@ input[type="range"]::-moz-range-thumb {
 }
 
 #fpsControl {
-  margin-top: 20px;
+  margin-top: 10px;
 }
 
 video {
   display: none;
 }
 
-/* Grain overlay: sits above video but under UI/text */
-#grain-overlay {
-  position: absolute;
+/* ✅ Grain sits above text/UI, below video */
+#grainOverlay {
+  position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   background: url('grain.png') repeat;
-  opacity: 0.15;
+  background-size: auto;
+  opacity: 0.12;
   pointer-events: none;
-  z-index: 1;
-  animation: grainDrift 2s infinite linear;
+  z-index: 1500;
+  animation: grainMove 2s infinite linear;
 }
 
-@keyframes grainDrift {
+@keyframes grainMove {
   0% { background-position: 0 0; }
   25% { background-position: 1px 1px; }
   50% { background-position: 2px 2px; }
-  75% { background-position: 1px 1px; }
+  75% { background-position: 1px -1px; }
   100% { background-position: 0 0; }
-}
-
-/* Ensure video stays behind the grain */
-.canvas-container {
-  position: relative;
-  z-index: 0; /* behind grain */
-}
-
-/* Ensure UI (text, sliders) is above the grain */
-h1, h2, label, span, input, .controls, .play-pause {
-  position: relative;
-  z-index: 2;
 }
