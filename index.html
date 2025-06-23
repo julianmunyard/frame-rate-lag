@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Julian's Video Vulture</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #111;
+      color: white;
+      margin: 0;
+      padding: 40px 20px;
+      text-align: center;
+    }
+
+    .canvas-container {
+      position: relative;
+      display: inline-block;
+      background: black;
+      max-width: 90%;
+    }
+
+    canvas {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .controls {
+      position: absolute;
+      bottom: 10px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .canvas-container:hover .controls {
+      opacity: 1;
+    }
+
+    .play-pause {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 40px;
+      color: white;
+      opacity: 0;
+      transition: opacity 0.2s;
+      pointer-events: none;
+    }
+
+    .canvas-container:hover .play-pause {
+      opacity: 0.8;
+      pointer-events: auto;
+      cursor: pointer;
+    }
+
+    input[type="range"] {
+      width: 60%;
+    }
+
+    #fpsControl {
+      margin-top: 20px;
+    }
+
+    video {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Julian’s Video Vulture</h1>
+  <h2>Upload a video, control frame rate</h2>
+
+  <input type="file" id="videoUpload" accept="video/*">
+
+  <div id="fpsControl">
+    <label for="fpsSlider">Frame Rate:</label>
+    <input type="range" id="fpsSlider" min="1" max="30" value="15">
+    <span id="fpsValue">15</span> FPS
+  </div>
+
+  <div class="canvas-container" id="videoContainer" style="display:none;">
+    <canvas id="videoCanvas"></canvas>
+    <video id="video" muted loop></video>
+    <div class="play-pause" id="playPause">►</div>
+    <div class="controls">
+      <input type="range" id="seekBar" value="0" step="0.01">
+    </div>
+  </div>
+
+  <script>
+    const upload = document.getElementById('videoUpload');
+    const canvas = document.getElementById('videoCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const video = document.getElementById('video');
+    const container = document.getElementById('videoContainer');
+    const playPauseBtn = document.getElementById('playPause');
+    const seekBar = document.getElementById('seekBar');
+
+    const fpsSlider = document.getElementById('fpsSlider');
+    const fpsValue = document.getElementById('fpsValue');
+
+    let fps = parseInt(fpsSlider.value);
+    let animationId;
+
+    fpsSlider.addEventListener('input', () => {
+      fps = parseInt(fpsSlider.value);
+      fpsValue.textContent = fps;
+    });
+
+    upload.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const url = URL.createObjectURL(file);
+      video.src = url;
+
+      video.onloadeddata = () => {
+        container.style.display = 'inline-block';
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        video.play();
+        drawToCanvas();
+      };
+    });
+
+    function drawToCanvas() {
+      cancelAnimationFrame(animationId);
+      let lastTime = 0;
+
+      function draw(time) {
+        const interval = 1000 / fps;
+        if (time - lastTime >= interval) {
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          lastTime = time;
+        }
+        animationId = requestAnimationFrame(draw);
+      }
+
+      animationId = requestAnimationFrame(draw);
+    }
+
+    playPauseBtn.addEventListener('click', () => {
+      if (video.paused) {
+        video.play();
+        playPauseBtn.textContent = '❚❚';
+      } else {
+        video.pause();
+        playPauseBtn.textContent = '►';
+      }
+    });
+
+    video.addEventListener('timeupdate', () => {
+      seekBar.max = video.duration;
+      seekBar.value = video.currentTime;
+    });
+
+    seekBar.addEventListener('input', () => {
+      video.currentTime = seekBar.value;
+    });
+
+    video.addEventListener('play', () => playPauseBtn.textContent = '❚❚');
+    video.addEventListener('pause', () => playPauseBtn.textContent = '►');
+  </script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+const upload = document.getElementById('videoUpload');
+const canvas = document.getElementById('videoCanvas');
+const ctx = canvas.getContext('2d');
+const slider = document.getElementById('fpsSlider');
+const fpsDisplay = document.getElementById('fpsValue');
+
+let video = document.createElement('video');
+video.muted = true;
+video.loop = true;
+video.playsInline = true;
+video.crossOrigin = "anonymous";
+
+let currentFPS = parseInt(slider.value, 10);
+let animationFrameId;
+
+slider.addEventListener('input', () => {
+  currentFPS = parseInt(slider.value, 10);
+  fpsDisplay.textContent = `${currentFPS} FPS`;
+});
+
+upload.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const url = URL.createObjectURL(file);
+  video.src = url;
+  video.load();
+
+  video.addEventListener('loadeddata', () => {
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    video.play();
+    startDrawing();
+  }, { once: true });
+});
+
+function startDrawing() {
+  let lastTime = 0;
+  let interval = 1000 / currentFPS;
+
+  function drawFrame(time) {
+    interval = 1000 / currentFPS; // update with slider
+    if (time - lastTime >= interval) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      lastTime = time;
+    }
+    animationFrameId = requestAnimationFrame(drawFrame);
+  }
+
+  cancelAnimationFrame(animationFrameId);
+  drawFrame(0);
+}

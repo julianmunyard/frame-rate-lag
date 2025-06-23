@@ -1,0 +1,18 @@
+body {
+  font-family: sans-serif;
+  text-align: center;
+  background: #111;
+  color: white;
+  margin: 0;
+  padding: 20px;
+}
+
+#controls {
+  margin: 20px 0;
+}
+
+canvas {
+  max-width: 100%;
+  height: auto;
+  background: black;
+}
